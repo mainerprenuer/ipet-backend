@@ -25,4 +25,14 @@ const reviewSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// this displays review on frontend
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "user",
+    select: "name photo"
+  });
+
+  next();
+});
+
 export default mongoose.model("Review", reviewSchema);
