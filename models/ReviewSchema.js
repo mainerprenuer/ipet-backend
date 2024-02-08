@@ -35,4 +35,27 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
+//using mongodb static method to cal Avg-ratings and total
+reviewSchema.statics.calcAverageRatings = async function (doctorId) {
+  //this points the current review
+  const stats = await this.aggregate([
+    {
+      $match: { doctor: doctorId },
+    },
+    {
+      $group: {
+        _id: "$doctor",
+        numOfRating: {$sum: 1 },
+        avgRating: { $avg: "$rating" },
+      },
+    },
+  ]);
+
+  console.log(stats);
+};
+
+reviewSchema.post("save", function () {
+  this.constructor.calcAverageRatings(this.doctor);
+});
+
 export default mongoose.model("Review", reviewSchema);
