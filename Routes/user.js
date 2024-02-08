@@ -6,12 +6,14 @@ import {
     getSingleUser 
 } from '../Controllers/userController.js'
 
+import { authenticate, restrict } from '../auth/verifyToken.js'
+
 const router = express.Router();
 
-router.get('/:id', getSingleUser);
-router.get('/', getAllUser);
-router.put('/:id', updateUser);
-router.delete('/:id', deleteUser);
+router.get('/:id', authenticate, restrict(['pet_owner']), getSingleUser);
+router.get('/',authenticate, restrict(['admin']), getAllUser);
+router.put('/:id', authenticate, restrict(['pet_owner']), updateUser);
+router.delete('/:id', authenticate, restrict(['pet_owner']), deleteUser);
 
 export default router;
 
